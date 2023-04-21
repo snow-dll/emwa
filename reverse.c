@@ -79,10 +79,11 @@ main ()
 
   lines = realloc (lines, sizeof (char *) * tot_lines);
 
-  static char *sample = ">>> emerge";
-  for (size_t i = 0; i < tot_lines; i++)
+  static char *pattern = ">>> emerge";
+
+  for (size_t i = tot_lines - 1; i > 0; i--)
   {
-    if (strstr (lines[i], sample) != NULL)
+    if (strstr (lines[i], pattern) != NULL)
       printf ("%s", lines[i]);
   }
 
