@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define INC_LINES 1024
 #define INC_CHARS 1024
@@ -38,8 +39,7 @@ main ()
 	{
 	  if (tot_chars != 0)
 	    {
-	      lines[tot_lines] =
-		realloc (lines[tot_lines], tot_chars + 1);
+	      lines[tot_lines] = realloc (lines[tot_lines], tot_chars + 1);
 	      lines[tot_lines][tot_chars] = '\0';
 
 	      tot_lines++;
@@ -48,14 +48,14 @@ main ()
 	  break;
 	}
 
-  if (tot_chars == 0)
-	  lines[tot_lines] = malloc (INC_CHARS);
+      if (tot_chars == 0)
+	lines[tot_lines] = malloc (INC_CHARS);
 
-  lines[tot_lines][tot_chars] = c;
+      lines[tot_lines][tot_chars] = c;
 
-  tot_chars++;
+      tot_chars++;
 
-  if (c == '\n')
+      if (c == '\n')
 	{
 	  lines[tot_lines] = realloc (lines[tot_lines], tot_chars + 1);
 	  lines[tot_lines][tot_chars] = '\0';
@@ -79,8 +79,12 @@ main ()
 
   lines = realloc (lines, sizeof (char *) * tot_lines);
 
+  static char *sample = ">>> emerge";
   for (size_t i = 0; i < tot_lines; i++)
-    printf ("%s", lines[i]);
+  {
+    if (strstr (lines[i], sample) != NULL)
+      printf ("%s", lines[i]);
+  }
 
   for (size_t i = 0; i < tot_lines; i++)
     free (lines[i]);
