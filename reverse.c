@@ -48,14 +48,14 @@ main ()
 	  break;
 	}
 
-      if (tot_chars == 0)
-	lines[tot_lines] = malloc (INC_CHARS);
+  if (tot_chars == 0)
+	  lines[tot_lines] = malloc (INC_CHARS);
 
-      lines[tot_lines][tot_chars] = c;
+  lines[tot_lines][tot_chars] = c;
 
-      tot_chars++;
+  tot_chars++;
 
-      if (c == '\n')
+  if (c == '\n')
 	{
 	  lines[tot_lines] = realloc (lines[tot_lines], tot_chars + 1);
 	  lines[tot_lines][tot_chars] = '\0';
@@ -82,12 +82,10 @@ main ()
   for (size_t i = 0; i < tot_lines; i++)
     printf ("%s", lines[i]);
 
-
   for (size_t i = 0; i < tot_lines; i++)
     free (lines[i]);
 
   free (lines);
-
   fclose (file);
 
 }
