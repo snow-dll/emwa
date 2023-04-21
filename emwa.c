@@ -18,6 +18,7 @@ struct arguments
   int hist_all;
   char *logdir;
   char *pkg_name;
+  int logvar;
 };
 
 
@@ -26,6 +27,7 @@ static struct argp_option options[] = {
   {"hist-pkg", 'p', "PKG", 0, "Print build history for PKG"},
   {"hist-all", 'a', 0, 0, "Print global build history"},
   {"logdir", 'd', "DIR", 0, "Specify emerge log directory"},
+  {"logvar", 'l', 0, 0, "Read from EMERGE_DIR_LOG"},
   {0}
 };
 
@@ -51,6 +53,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
     case 'd':
       arguments->logdir = arg;
       break;
+    case 'l':
+      arguments->logvar = 1;
+      break;
     default:
       return ARGP_ERR_UNKNOWN;
     }
@@ -72,8 +77,12 @@ main (int argc, char **argv)
   arguments.hist_all = 0;
   arguments.logdir = "/var/log/portage/";
   arguments.pkg_name = "";
+  arguments.logvar = 0;
 
   argp_parse (&argp, argc, argv, 0, 0, &arguments);
+
+  parse_log (cmd, arguments.logdir, logname, arguments.hist_all,
+      arguments.pkg_name, arguments.verbose, arguments.logvar);
 
   return 0;
 }
