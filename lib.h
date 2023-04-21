@@ -1,45 +1,59 @@
 #include <stdio.h>
-
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 /*** global vars ***/
 
-// static char *log_file = "/var/log/portage/emerge.log";
-
-static char *cmd = "portageq envvar EMERGE_DIR_LOG";
+static char *log = "/var/log/portage/emerge.log";
 static char *logname = "emerge.log";
+static char *cmd = "portageq envvar EMERGE_DIR_LOG";
 
-
-/** TEMPORARY DECLARATION FOR TESTING PURPOSES **/
-
-static char *fulllog = "/var/log/portage/emerge.log";
-
-
-static int merge_act;
-static int merge_tot;
-static char *build_flags;
-
-static char *std_tmp_dir = "/tmp";
-
-
-/*** function prototypes ***/
-
-static void parse_log (char *cmd, char *l_dir, char *l_name,
-    int hist_all, char *pkg_name, int verbose, int logvar)
+static void
+usage ()
 {
-  if (logvar == 1)
-    // read from cmd
-    printf ("logvar = 1\n");
+  printf ("usage: test");
+}
 
-
-  // read from file, parse logs into global vars
-  // merge-act / merge_tot
+static int
+arg_val (int hist_all, char *logdir, char *pkg_name, int logvar)
+{
+  if (hist_all == 1 && pkg_name != "")
+  {
+    usage ();
+    return 1;
+  } else if (logdir != "" && logvar == 1)
+  {
+    usage ();
+    return 1;
+  }
   
+  if (logvar == 1)
+  {
+    if (logdir != "")
+    {
+      usage ();
+      return 1;
+    }
 
-  if (verbose == 1)
-    // get str "*** emerge" to fetch build flags
-    // parse into var build_flags
-    printf ("verbose = 1\n");
+    FILE *fp;
+    char *cmd = "portageq envvar EMERGE_LOG_DIR";
+    char *ch[100];
+    char c;
 
-  if (hist_all == 1)
-    printf ("hist_all = 1\n");
+    fp = popen (cmd, "r");
+
+    while ((c = fgetc(fp)) != EOF)
+      if (!isspace(c))
+      {
+        strncat (ch, &c, 1);
+      }
+
+    puts (ch); 
+    pclose(fp);
+
+    return EXIT_SUCCESS;
+  }
+
+  return 0;
 }

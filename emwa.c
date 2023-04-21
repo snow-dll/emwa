@@ -1,4 +1,5 @@
 #include "lib.h"
+#include "reverse.h"
 #include <stdio.h>
 #include <argp.h>
 
@@ -23,11 +24,11 @@ struct arguments
 
 
 static struct argp_option options[] = {
-  {"verbose", 'v', 0, 0, "Produce verbose output"},
-  {"hist-pkg", 'p', "PKG", 0, "Print build history for PKG"},
-  {"hist-all", 'a', 0, 0, "Print global build history"},
-  {"logdir", 'd', "DIR", 0, "Specify emerge log directory"},
-  {"logvar", 'l', 0, 0, "Read from EMERGE_DIR_LOG"},
+  {"verbose", 'v', 0, 0, "Produce verbose output", 0},
+  {"hist-pkg", 'p', "PKG", 0, "Print build history for PKG", 0},
+  {"hist-all", 'a', 0, 0, "Print global build history", 0},
+  {"logdir", 'd', "DIR", 0, "Specify emerge log directory", 0},
+  {"logvar", 'l', 0, 0, "Read from EMERGE_DIR_LOG", 0},
   {0}
 };
 
@@ -72,17 +73,23 @@ main (int argc, char **argv)
 {
   struct arguments arguments;
 
-  /* initialize as 0 */
   arguments.verbose = 0;
   arguments.hist_all = 0;
-  arguments.logdir = "/var/log/portage/";
+  arguments.logdir = "";
   arguments.pkg_name = "";
   arguments.logvar = 0;
 
   argp_parse (&argp, argc, argv, 0, 0, &arguments);
 
-  parse_log (cmd, arguments.logdir, logname, arguments.hist_all,
-      arguments.pkg_name, arguments.verbose, arguments.logvar);
+  arg_val (arguments.hist_all, arguments.logdir,
+      arguments.pkg_name, arguments.logvar);
+  
+  //FILE *fp;
+  //fp = popen ("portageq envvar EMERGE_LOG_DIR")
+
+
+  //reverse(log);
+  //parse_logname();
 
   return 0;
 }
