@@ -3,10 +3,14 @@
 ## Project under active development
 
 ### options:
-      -m  --monitor     (monitor current build process)
-      -p  --previous    (print previous build time for pkg)
-      -a  --average     (print average build time for pkg)
-      -h  --help        (show help / usage menu)
+      -a  --hist-all      Print global build history
+      -d  --logdir=DIR    Specify emerge log directory
+      -l  --logvar        Read from EMERGE_DIR_LOG
+      -p  --hist-pkg=PKG  Print build history for PKG
+      -v  --verbose       Produce verbose output
+      -?  --help          Give this help list
+          --usage         Give a short usage message
+      -V  --version       Print program version
 
 ### consider supporting emwa by opening issues / pull requests.
 emwa will be strictly coded in C and make.
