@@ -83,6 +83,8 @@ main (int argc, char **argv)
   arg_val (arguments.hist_all, arguments.logdir,
 	   arguments.pkg_name, arguments.logvar);
 
+  // implement while loop
+
   reverse (l_dir);
 
   return 0;
