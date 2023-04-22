@@ -83,13 +83,8 @@ main (int argc, char **argv)
 
   arg_val (arguments.hist_all, arguments.logdir,
       arguments.pkg_name, arguments.logvar);
-  
-  //FILE *fp;
-  //fp = popen ("portageq envvar EMERGE_LOG_DIR")
 
-
-  //reverse(log);
-  //parse_logname();
+  reverse(l_dir);
 
   return 0;
 }
