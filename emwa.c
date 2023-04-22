@@ -63,8 +63,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
   return 0;
 }
 
-static struct argp argp = {options, parse_opt, args_doc, doc};
-
+static struct argp argp = { options, parse_opt, args_doc, doc };
 
 /*** main ***/
 
@@ -82,9 +81,9 @@ main (int argc, char **argv)
   argp_parse (&argp, argc, argv, 0, 0, &arguments);
 
   arg_val (arguments.hist_all, arguments.logdir,
-      arguments.pkg_name, arguments.logvar);
+	   arguments.pkg_name, arguments.logvar);
 
-  reverse(l_dir);
+  reverse (l_dir);
 
   return 0;
 }
