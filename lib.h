@@ -13,50 +13,56 @@ static char l_dir[100];
 static void
 usage ()
 {
-  printf ("usage: test");
+  printf ("usage: test\n");
 }
 
 static int
 arg_val (int hist_all, char *logdir, char *pkg_name, int logvar)
 {
-  if (hist_all == 1 && pkg_name != "")
-  {
-    usage ();
-    return 1;
-  } else if (logdir != "" && logvar == 1)
-  {
-    usage ();
-    return 1;
-  }
-  
-  if (logvar == 1)
-  {
-    if (logdir != "")
+  if (hist_all == 1 && pkg_name[0] != '\0')
     {
       usage ();
-      return 1;
+      exit (1);
+    }
+  else if (logvar == 1 && logdir[0] != '\0')
+    {
+      usage ();
+      exit (1);
     }
 
-    FILE *fp;
-    char c;
-    fp = popen (cmd, "r");
+  if (logvar == 1)
+    {
+      FILE *fp;
+      char c;
+      fp = popen (cmd, "r");
 
-    while ((c = fgetc(fp)) != EOF)
-      if (!isspace(c))
-      {
-        strncat (l_dir, &c, 1);
-      }
+      while ((c = fgetc (fp)) != EOF)
+	if (!isspace (c))
+	  {
+	    strncat (l_dir, &c, 1);
+	  }
 
-    int sz = strlen (logname);
-    strncat (l_dir, logname, sz);
- 
-    pclose(fp);
-    return EXIT_SUCCESS;
-  } else
-  {
-    int sz = strlen (log);
-    strncpy (l_dir, log, sz);
-  }
+      int sz = strlen (logname);
+      strncat (l_dir, logname, sz);
+
+      pclose (fp);
+      return EXIT_SUCCESS;
+    }
+  else
+    {
+      int sz = strlen (log);
+      strncpy (l_dir, log, sz);
+    }
+
+  if (hist_all == 1)
+    {
+      printf ("hist pass [ok]\n");
+    }
+
+  if (pkg_name[0] != '\0')
+    {
+      printf ("pkg pass [ok]\n");
+    }
 
   return 0;
 }
