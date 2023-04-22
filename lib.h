@@ -6,8 +6,9 @@
 /*** global vars ***/
 
 static char *log = "/var/log/portage/emerge.log";
-static char *logname = "emerge.log";
-static char *cmd = "portageq envvar EMERGE_DIR_LOG";
+static char *logname = "/emerge.log";
+static char *cmd = "portageq envvar EMERGE_LOG_DIR";
+static char l_dir[100];
 
 static void
 usage ()
@@ -37,22 +38,24 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar)
     }
 
     FILE *fp;
-    char *cmd = "portageq envvar EMERGE_LOG_DIR";
-    char *ch[100];
     char c;
-
     fp = popen (cmd, "r");
 
     while ((c = fgetc(fp)) != EOF)
       if (!isspace(c))
       {
-        strncat (ch, &c, 1);
+        strncat (l_dir, &c, 1);
       }
 
-    puts (ch); 
+    int sz = strlen (logname);
+    strncat (l_dir, logname, sz);
+ 
     pclose(fp);
-
     return EXIT_SUCCESS;
+  } else
+  {
+    int sz = strlen (log);
+    strncpy (l_dir, log, sz);
   }
 
   return 0;
