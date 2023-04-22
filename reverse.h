@@ -6,9 +6,6 @@
 #define INC_LINES 1024
 #define INC_CHARS 1024
 
-//static char *fulllog = "/var/log/portage/emerge.log";
-//static char *logname = "emerge.log";
-
 int
 reverse (char *log		/*, char *l_dir, char *l_name, int hist_all,
 				   char *pkg_name, int verbose, int logvar */ )
@@ -82,14 +79,39 @@ reverse (char *log		/*, char *l_dir, char *l_name, int hist_all,
 
   lines = realloc (lines, sizeof (char *) * tot_lines);
 
-  static char *pattern = ">>> emerge";
+  /** temporary, will be reworked in future updates **/
 
-  for (size_t i = tot_lines - 1; i > 0; i--)
+  static char *pattern = ">>> emerge";
+  static char delim_start[] = "(";
+  static char delim_end[] = ")";
+  size_t i = tot_lines - 1;
+
+  for (i; i > 0; i--)
+  {
+    if (strstr (lines[i], pattern) != NULL)
+      break;
+  }
+
+  char *extract_buf = strtok (lines[i], delim_start);
+  extract_buf[0] = '\0';
+
+  char *extract = strtok (NULL, delim_end);
+
+  printf ("%s\n", extract);
+
+  /*****************************************\
+  |                                         |
+  |    UNUSED, STRUCTURE FOR HIST FLAGS     |
+  |                                         |
+  \*****************************************/
+
+/*
+  for (i; i > 0; i--)
     {
       if (strstr (lines[i], pattern) != NULL)
 	printf ("%s", lines[i]);
     }
-
+*/
   for (size_t i = 0; i < tot_lines; i++)
     free (lines[i]);
 
