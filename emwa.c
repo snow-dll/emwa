@@ -2,14 +2,14 @@
 #include "reverse.h"
 #include <stdio.h>
 #include <argp.h>
-
+#include <unistd.h>
+#include <stdlib.h>
 
 const char *argp_program_version = "emwa 1.0.0";
 const char *argp_program_bug_address = "k3nny.wx@mailfence.com";
 
 static char args_doc[] = "[LOGDIR] / [PKG]";
 static char doc[] = "emwa -- [em]erge [wa]tchtower";
-
 
 /*** data structs ***/
 
@@ -85,7 +85,18 @@ main (int argc, char **argv)
 
   // implement while loop
 
-  reverse (l_dir);
+  while (1)
+  {
+    graphic ();
+
+    reverse (log);
+    fflush (stdout);
+    sleep (2);
+  }
+
+
+    //graphic ();
+    //reverse (l_dir);
 
   return 0;
 }

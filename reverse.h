@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <string.h>
+#include <string.h> 
 
 #define INC_LINES 1024
 #define INC_CHARS 1024
 
 int
-reverse (char *log		/*, char *l_dir, char *l_name, int hist_all,
+reverse (char *log		/* int hist_all,
 				   char *pkg_name, int verbose, int logvar */ )
 {
   FILE *file = fopen (log, "r");
@@ -83,7 +83,8 @@ reverse (char *log		/*, char *l_dir, char *l_name, int hist_all,
 
   static char *pattern = ">>> emerge";
   static char delim_start[] = "(";
-  static char delim_end[] = ")";
+  static char delim_counter[] = ")";
+  static char delim_pkg[] = " ";
   size_t i = tot_lines - 1;
 
   for (i; i > 0; i--)
@@ -95,9 +96,9 @@ reverse (char *log		/*, char *l_dir, char *l_name, int hist_all,
   char *extract_buf = strtok (lines[i], delim_start);
   extract_buf[0] = '\0';
 
-  char *extract = strtok (NULL, delim_end);
-
-  printf ("%s\n", extract);
+  char *counter = strtok (NULL, delim_counter);
+  char *pkg = strtok (NULL, delim_pkg);
+  printf ("emerging: %s\n\npackage: %s", counter, pkg);
 
   /*****************************************\
   |                                         |

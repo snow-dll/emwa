@@ -16,6 +16,13 @@ usage ()
   printf ("usage: test\n");
 }
 
+static void
+graphic ()
+{
+  printf ("\x1b[1;H\x1b[2J");
+  printf ("emwa - [em]erge [wa]tchtower\n\n");
+}
+
 static int
 arg_val (int hist_all, char *logdir, char *pkg_name, int logvar)
 {
