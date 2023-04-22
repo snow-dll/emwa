@@ -54,15 +54,5 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar)
       strncpy (l_dir, log, sz);
     }
 
-  if (hist_all == 1)
-    {
-      printf ("hist pass [ok]\n");
-    }
-
-  if (pkg_name[0] != '\0')
-    {
-      printf ("pkg pass [ok]\n");
-    }
-
   return 0;
 }
