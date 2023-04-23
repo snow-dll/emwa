@@ -113,7 +113,11 @@ reverse (char *log, int verbose		/* int hist_all,
 
         char *counter = strtok (NULL, delim_counter);
         char *pkg = strtok (NULL, delim_pkg);
-        printf ("emerging: %s\n\npackage: %s\n\n(reading from %s)\n\npress [q] to exit..", counter, pkg, log);
+
+        if (verbose == 1)
+          printf ("emerging: %s\n\npackage: %s\n\n(reading from %s)\n\npress [q] to exit..", counter, pkg, log);
+        else 
+          printf ("emerging: %s\n\npackage: %s\n\npress [q] to exit..", counter, pkg);
 
         for (size_t cnt = 0; cnt < tot_lines; cnt++)
           free (lines[cnt]);
