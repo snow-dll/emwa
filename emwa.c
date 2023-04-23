@@ -83,20 +83,28 @@ main (int argc, char **argv)
   arg_val (arguments.hist_all, arguments.logdir,
 	   arguments.pkg_name, arguments.logvar);
 
-  // implement while loop
+  int ch;
+  changemode (1);
+  while (!kbhit ())
+    {
+      printf ("\x1b[?25l");
+      graphic ();
 
-  while (1)
-  {
-    graphic ();
+      reverse (log, arguments.verbose);
+      fflush (stdout);
 
-    reverse (log);
-    fflush (stdout);
-    sleep (2);
-  }
+      ch = getchar ();
+      if (ch == 'q')
+	    {
 
+	    changemode (0);
+	    printf ("\x1b[?25h]");
+	    printf ("\x1b[H\x1b[J");
+	    break;
+	    }
 
-    //graphic ();
-    //reverse (l_dir);
+      sleep (1);
+    }
 
   return 0;
 }
