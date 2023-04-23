@@ -86,27 +86,72 @@ reverse (char *log, int verbose		/* int hist_all,
   static char delim_start[] = "(";
   static char delim_counter[] = ")";
   static char delim_pkg[] = " ";
-  size_t i = tot_lines - 1;
+  int i = tot_lines - 1;
 
-  for (i; i > 0; i--)
+  if (strstr (lines[i], pat_end) != NULL)
+  {
+    printf ("emwa - [em]erge [wa]tchtower\n\n");
+    printf ("no running build process found.");
+
+    for (size_t cnt = 0; cnt < tot_lines; cnt++)
+      free (lines[cnt]);
+
+    free (lines);
+    fclose (file);
+
+  } else
+  {
+    for (i; i > 0; i--)
     {
-      if (strstr (lines[i], pat_end) != NULL)
+      if (strstr (lines[i], pat_run) != NULL)
       {
+        
+        char *extract_buf = strtok (lines[i], delim_start);
+        extract_buf[0] = '\0';
+
+        char *counter = strtok (NULL, delim_counter);
+        char *pkg = strtok (NULL, delim_pkg);
+
         if (verbose == 1)
-          printf ("no running build process found.\n\n(reading from %s)\n\npress [q] to exit..", log);
-        else
-          printf ("no running build process found.\n\npress [q] to exit..");
-
-        for (size_t cnt = 0; cnt < tot_lines; cnt++)
-	        free (lines[cnt]);
-
-        free (lines);
-        fclose (file);
+        {
+          printf ("emwa - [em]erge [wa]tchtower\n\n");
+          printf (" - emerging: %s\n\n", counter);
+          printf (" - package: %s\n\n", pkg);
+          printf (" - reading from: %s", log);
+        } else
+        {
+          printf ("emwa - [em]erge [wa]tchtower\n\n");
+          printf (" - emerging: %s\n\n", counter);
+          printf (" - package: %s", pkg);
+        }
 
         break;
       }
+    }
 
-      else if (strstr (lines[i], pat_run) != NULL)
+
+
+    for (size_t cnt = 0; cnt < tot_lines; cnt++)
+      free (lines[cnt]);
+
+    free (lines);
+    fclose (file);
+
+  }
+
+/*
+  if (strstr (lines[i], pat_end) != NULL)
+  {
+    printf ("no running build process found.\n\n(reading from %s)\n\npress [q] to exit...)", log);
+
+  } else
+  {
+
+
+  for (i; i > 0; i--)
+    {
+    
+      if (strstr (lines[i], pat_run) != NULL)
       {
         char *extract_buf = strtok (lines[i], delim_start);
         extract_buf[0] = '\0';
@@ -128,6 +173,8 @@ reverse (char *log, int verbose		/* int hist_all,
 	      break;
       }
     }
+  }
 
+*/
   return 0;
 }
