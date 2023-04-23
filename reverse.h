@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <string.h> 
+#include <string.h>
 
 #define INC_LINES 1024
 #define INC_CHARS 1024
 
 int
-reverse (char *log		/* int hist_all,
+reverse (char *log, int verbose		/* int hist_all,
 				   char *pkg_name, int verbose, int logvar */ )
 {
   FILE *file = fopen (log, "r");
@@ -81,43 +81,49 @@ reverse (char *log		/* int hist_all,
 
   /** temporary, will be reworked in future updates **/
 
-  static char *pattern = ">>> emerge";
+  static char *pat_run = ">>> emerge";
+  static char *pat_end = "*** terminating";
   static char delim_start[] = "(";
   static char delim_counter[] = ")";
   static char delim_pkg[] = " ";
   size_t i = tot_lines - 1;
 
   for (i; i > 0; i--)
-  {
-    if (strstr (lines[i], pattern) != NULL)
-      break;
-  }
-
-  char *extract_buf = strtok (lines[i], delim_start);
-  extract_buf[0] = '\0';
-
-  char *counter = strtok (NULL, delim_counter);
-  char *pkg = strtok (NULL, delim_pkg);
-  printf ("emerging: %s\n\npackage: %s", counter, pkg);
-
-  /*****************************************\
-  |                                         |
-  |    UNUSED, STRUCTURE FOR HIST FLAGS     |
-  |                                         |
-  \*****************************************/
-
-/*
-  for (i; i > 0; i--)
     {
-      if (strstr (lines[i], pattern) != NULL)
-	printf ("%s", lines[i]);
-    }
-*/
-  for (size_t i = 0; i < tot_lines; i++)
-    free (lines[i]);
+      if (strstr (lines[i], pat_end) != NULL)
+      {
+        if (verbose == 1)
+          printf ("no running build process found.\n\n(reading from %s)\n\npress [q] to exit..", log);
+        else
+          printf ("no running build process found.\n\npress [q] to exit..");
 
-  free (lines);
-  fclose (file);
+        for (size_t cnt = 0; cnt < tot_lines; cnt++)
+	        free (lines[cnt]);
+
+        free (lines);
+        fclose (file);
+
+        break;
+      }
+
+      else if (strstr (lines[i], pat_run) != NULL)
+      {
+        char *extract_buf = strtok (lines[i], delim_start);
+        extract_buf[0] = '\0';
+
+        char *counter = strtok (NULL, delim_counter);
+        char *pkg = strtok (NULL, delim_pkg);
+        printf ("emerging: %s\n\npackage: %s\n\n(reading from %s)\n\npress [q] to exit..", counter, pkg, log);
+
+        for (size_t cnt = 0; cnt < tot_lines; cnt++)
+          free (lines[cnt]);
+
+        free (lines);
+        fclose (file);
+        
+	      break;
+      }
+    }
 
   return 0;
 }
