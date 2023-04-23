@@ -83,12 +83,19 @@ main (int argc, char **argv)
   arg_val (arguments.hist_all, arguments.logdir,
 	   arguments.pkg_name, arguments.logvar);
 
+
+  if (arguments.pkg_name[0] != '\0' || arguments.hist_all == 1)
+  {
+    reverse (l_dir, arguments.verbose, arguments.pkg_name, arguments.hist_all);
+  }
+  else
+  {
   while (1)
     {
       printf ("\x1b[H\x1b[J");
 
       reverse (l_dir, arguments.verbose, arguments.pkg_name, arguments.hist_all);
-
+ 
       fflush (stdout);
       sleep (1);
 /*
@@ -105,6 +112,6 @@ main (int argc, char **argv)
       printf ("\x1b[H\x1b[J");
       */
     }
-
+  }
   return 0;
 }
