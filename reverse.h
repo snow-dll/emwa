@@ -8,7 +8,7 @@
 
 int
 reverse (char *log, int verbose		/* int hist_all,
-				   char *pkg_name, int verbose, int logvar */ )
+				   char *pkg_name */ )
 {
   FILE *file = fopen (log, "r");
 
@@ -79,7 +79,8 @@ reverse (char *log, int verbose		/* int hist_all,
 
   lines = realloc (lines, sizeof (char *) * tot_lines);
 
-  /** temporary, will be reworked in future updates **/
+
+  /*** ARG DEPENDTEND ***/
 
   static char *pat_run = ">>> emerge";
   static char *pat_end = "*** terminating";
@@ -91,7 +92,7 @@ reverse (char *log, int verbose		/* int hist_all,
   if (strstr (lines[i], pat_end) != NULL)
   {
     printf ("emwa - [em]erge [wa]tchtower\n\n");
-    printf ("no running build process found.");
+    printf ("no running build process found.\n");
 
     for (size_t cnt = 0; cnt < tot_lines; cnt++)
       free (lines[cnt]);
