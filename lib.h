@@ -9,6 +9,7 @@
 
 /*** global vars ***/
 
+static char *log = "/var/log/portage/emerge.log";
 static char *logname = "/emerge.log";
 static char *cmd = "portageq envvar EMERGE_LOG_DIR";
 static char l_dir[100];
@@ -51,21 +52,19 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar)
 
       pclose (fp);
       return EXIT_SUCCESS;
-    } else
+    } else if (logdir[0] != '\0')
     {
       int sz_dir = strlen (logdir);
       strncpy (l_dir, logdir, sz_dir);
 
       int sz_name = strlen (logname);
       strncat (l_dir, logname, sz_name);
-    } 
-/*
-  else
+    } else
     {
       int sz = strlen (log);
       strncpy (l_dir, log, sz);
     }
-*/
+
   return 0;
 }
 
