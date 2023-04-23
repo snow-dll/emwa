@@ -83,13 +83,11 @@ main (int argc, char **argv)
   arg_val (arguments.hist_all, arguments.logdir,
 	   arguments.pkg_name, arguments.logvar);
 
-  int ch;
-  changemode (1);
   while (1)
     {
       printf ("\x1b[H\x1b[J");
 
-      reverse (log, arguments.verbose);
+      reverse (l_dir, arguments.verbose);
 
       fflush (stdout);
       sleep (1);
