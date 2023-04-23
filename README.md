@@ -15,8 +15,7 @@
 ### consider supporting emwa by opening issues / pull requests.
 emwa will be strictly coded in C and make.
 
-### Author: k3nny - Systems Engineer for WhisperX Security
-
 ### Licensed under the GPL License
 
 ### <k3nny.wx@mailfence.com>
+
