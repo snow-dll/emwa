@@ -9,7 +9,6 @@
 
 /*** global vars ***/
 
-static char *log = "/var/log/portage/emerge.log";
 static char *logname = "/emerge.log";
 static char *cmd = "portageq envvar EMERGE_LOG_DIR";
 static char l_dir[100];
@@ -17,7 +16,9 @@ static char l_dir[100];
 static void
 usage ()
 {
-  printf ("usage: test\n");
+  printf ("\nemwa - [em]erge [wa]tchtower\n\n");
+  printf ("usage: emwa [FLAG] [ARG]\n\n");
+  printf (" - written by k3nny <k3nny.wx@mailfence.com>\n\n");
 }
 
 static int
@@ -27,8 +28,7 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar)
     {
       usage ();
       exit (1);
-    }
-  else if (logvar == 1 && logdir[0] != '\0')
+    } else if (logvar == 1 && logdir[0] != '\0')
     {
       usage ();
       exit (1);
@@ -41,26 +41,36 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar)
       fp = popen (cmd, "r");
 
       while ((c = fgetc (fp)) != EOF)
-	if (!isspace (c))
-	  {
-	    strncat (l_dir, &c, 1);
-	  }
+	      if (!isspace (c))
+	      {
+	        strncat (l_dir, &c, 1);
+	      }
 
       int sz = strlen (logname);
       strncat (l_dir, logname, sz);
 
       pclose (fp);
       return EXIT_SUCCESS;
-    }
+    } else
+    {
+      int sz_dir = strlen (logdir);
+      strncpy (l_dir, logdir, sz_dir);
+
+      int sz_name = strlen (logname);
+      strncat (l_dir, logname, sz_name);
+    } 
+/*
   else
     {
       int sz = strlen (log);
       strncpy (l_dir, log, sz);
     }
-
+*/
   return 0;
 }
 
+
+/*
 void
 changemode (int dir)
 {
@@ -93,3 +103,4 @@ kbhit (void)
   return FD_ISSET (STDIN_FILENO, &rdfs);
 
 }
+*/
