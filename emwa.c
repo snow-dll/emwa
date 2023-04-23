@@ -85,25 +85,27 @@ main (int argc, char **argv)
 
   int ch;
   changemode (1);
-  while (!kbhit ())
+  while (1)
     {
-      printf ("\x1b[?25l");
-      graphic ();
+      printf ("\x1b[H\x1b[J");
 
       reverse (log, arguments.verbose);
-      fflush (stdout);
 
+      fflush (stdout);
+      sleep (1);
+/*
       ch = getchar ();
       if (ch == 'q')
 	    {
 	      changemode (0);
-	      printf ("\x1b[?25h]");
+	      printf ("\x1b[?25h");
 	      printf ("\x1b[H\x1b[J");
 	      break;
 	    }
 
       sleep (1);
       printf ("\x1b[H\x1b[J");
+      */
     }
 
   return 0;
