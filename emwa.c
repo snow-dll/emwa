@@ -87,7 +87,7 @@ main (int argc, char **argv)
     {
       printf ("\x1b[H\x1b[J");
 
-      reverse (l_dir, arguments.verbose);
+      reverse (l_dir, arguments.verbose, arguments.pkg_name, arguments.hist_all);
 
       fflush (stdout);
       sleep (1);
