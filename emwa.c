@@ -96,14 +96,14 @@ main (int argc, char **argv)
       ch = getchar ();
       if (ch == 'q')
 	    {
-
-	    changemode (0);
-	    printf ("\x1b[?25h]");
-	    printf ("\x1b[H\x1b[J");
-	    break;
+	      changemode (0);
+	      printf ("\x1b[?25h]");
+	      printf ("\x1b[H\x1b[J");
+	      break;
 	    }
 
       sleep (1);
+      printf ("\x1b[H\x1b[J");
     }
 
   return 0;
