@@ -100,6 +100,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all)
         char *pkg = strtok (NULL, delim_pkg);
 
         printf ("%s  %s\n", em_num, pkg);
+
       }
     }
 
@@ -112,7 +113,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all)
 
   else if (pkg_name[0] != '\0')
   {
-    for (i = 0; i < tot_lines; i++)
+    for (i = 0; i < tot_lines - 1; i++)
     {
       
       if (strstr (lines[i], pkg_name) != NULL && strstr (lines[i], pat_run) != NULL)
@@ -123,7 +124,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all)
         char *pkg = strtok (NULL, delim_pkg);
 
         printf ("%s  %s\n", em_num, pkg);
-      }    
+      }
     }
 
     for (size_t cnt = 0; cnt < tot_lines; cnt++)
