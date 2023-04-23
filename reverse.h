@@ -86,6 +86,8 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all)
   static char delim_start[] = "(";
   static char delim_counter[] = ")";
   static char delim_pkg[] = " ";
+  static char delim_colon[] = ":";
+  static char delim_nl[] = "\n";
   size_t i = tot_lines - 1;
 
   if (hist_all == 1)
@@ -94,12 +96,17 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all)
     {
       if (strstr (lines[i], pat_run) != NULL)
       {
-        char *em_num = strtok (lines[i], delim_pkg);
-        char *buf = strtok (NULL, delim_counter);
-        buf[0] = '\0';
+        char *buf1 = strtok (lines[i - 2], delim_pkg);
+        buf1[0] = '\0';
+        char *buf2 = strtok (NULL, delim_colon);
+        buf2[0] = '\0';
+        char *time = strtok (NULL, delim_nl);
+
+        char *buf3 = strtok (lines[i], delim_counter);
+        buf3[0] = '\0';
         char *pkg = strtok (NULL, delim_pkg);
 
-        printf ("%s  %s\n", em_num, pkg);
+        printf ("%s : %s\n", time, pkg);
 
       }
     }
@@ -118,12 +125,18 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all)
       
       if (strstr (lines[i], pkg_name) != NULL && strstr (lines[i], pat_run) != NULL)
       {
-        char *em_num = strtok (lines[i], delim_pkg);
-        char *buf = strtok (NULL, delim_counter);
-        buf[0] = '\0';
+        char *buf1 = strtok (lines[i - 2], delim_pkg);
+        buf1[0] = '\0';
+        char *buf2 = strtok (NULL, delim_colon);
+        buf2[0] = '\0';
+        char *time = strtok (NULL, delim_nl);
+
+        char *buf3 = strtok (lines[i], delim_counter);
+        buf3[0] = '\0';
         char *pkg = strtok (NULL, delim_pkg);
 
-        printf ("%s  %s\n", em_num, pkg);
+        printf ("%s : %s\n", time, pkg);
+
       }
     }
 
