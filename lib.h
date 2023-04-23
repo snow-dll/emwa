@@ -39,6 +39,7 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar)
     {
       FILE *fp;
       char c;
+
       fp = popen (cmd, "r");
 
       while ((c = fgetc (fp)) != EOF)
