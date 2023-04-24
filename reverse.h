@@ -7,7 +7,7 @@
 #define INC_CHARS 1024
 
 int
-reverse (char *log, int verbose, char *pkg_name, int hist_all)
+reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile)
 {
   FILE *file = fopen (log, "r");
 
@@ -89,8 +89,48 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all)
   static char delim_colon[] = ":";
   static char delim_nl[] = "\n";
   size_t i = tot_lines - 1;
+  static char *comp = "_";
 
-  if (hist_all == 1)
+  FILE *fp;
+  fp = fopen (outfile, "w");
+  fprintf (fp, " ");
+  fclose (fp);
+
+  if (pkg_name[0] != '\0')
+  {
+    for (i = 0; i < tot_lines - 1; i++)
+    { 
+      if (strstr (lines[i], pkg_name) != NULL && strstr (lines[i], pat_run) != NULL)
+      {
+        char *buf1 = strtok (lines[i - 2], delim_pkg);
+        buf1[0] = '\0';
+        char *buf2 = strtok (NULL, delim_colon);
+        buf2[0] = '\0';
+        char *time = strtok (NULL, delim_nl);
+
+        char *buf3 = strtok (lines[i], delim_counter);
+        buf3[0] = '\0';
+        char *pkg = strtok (NULL, delim_pkg);
+
+        if (outfile != comp)
+        {
+          fp = fopen (outfile, "a");
+          fprintf (fp, "%s : %s\n", time, pkg);
+          fclose (fp);
+        } else
+        {
+          printf (" %s : %s\n", time, pkg);
+        }
+      }
+    }
+  
+    for (size_t cnt = 0; cnt < tot_lines; cnt++)
+      free (lines[cnt]);
+
+    free (lines);
+    fclose (file);
+  }
+  else if (hist_all == 1)
   {
     for (i = 0; i < tot_lines; i++)
     {
@@ -106,47 +146,21 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all)
         buf3[0] = '\0';
         char *pkg = strtok (NULL, delim_pkg);
 
-        printf ("%s : %s\n", time, pkg);
-
+        if (outfile != comp)
+        {
+          fp = fopen (outfile, "a");
+          fprintf (fp, "%s : %s\n", time, pkg);
+          fclose (fp);
+        } else
+        {
+          printf (" %s : %s\n", time, pkg);
+        }
       }
     }
-
-    for (size_t cnt = 0; cnt < tot_lines; cnt++)
-      free (lines[cnt]);
 
     free (lines);
     fclose (file);
   }
-
-  else if (pkg_name[0] != '\0')
-  {
-    for (i = 0; i < tot_lines - 1; i++)
-    {
-      
-      if (strstr (lines[i], pkg_name) != NULL && strstr (lines[i], pat_run) != NULL)
-      {
-        char *buf1 = strtok (lines[i - 2], delim_pkg);
-        buf1[0] = '\0';
-        char *buf2 = strtok (NULL, delim_colon);
-        buf2[0] = '\0';
-        char *time = strtok (NULL, delim_nl);
-
-        char *buf3 = strtok (lines[i], delim_counter);
-        buf3[0] = '\0';
-        char *pkg = strtok (NULL, delim_pkg);
-
-        printf ("%s : %s\n", time, pkg);
-
-      }
-    }
-
-    for (size_t cnt = 0; cnt < tot_lines; cnt++)
-      free (lines[cnt]);
-
-    free (lines);
-    fclose (file);
-  }
-
   else if (strstr (lines[i], pat_end) != NULL)
   {
     printf ("emwa - [em]erge [wa]tchtower\n\n");
@@ -158,7 +172,8 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all)
     free (lines);
     fclose (file);
 
-  } else
+  } 
+  else
   {
     for (i; i > 0; i--)
     {
