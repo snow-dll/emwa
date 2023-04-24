@@ -20,6 +20,7 @@ struct arguments
   char *logdir;
   char *pkg_name;
   int logvar;
+  char *outfile;
 };
 
 
@@ -29,6 +30,7 @@ static struct argp_option options[] = {
   {"hist-all", 'a', 0, 0, "Print global build history", 0},
   {"logdir", 'd', "DIR", 0, "Specify emerge log directory", 0},
   {"logvar", 'l', 0, 0, "Read from EMERGE_DIR_LOG", 0},
+  {"outfile", 'o', "FILE", 0, "Write to file instead of standard output", 0},
   {0}
 };
 
@@ -57,6 +59,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
     case 'l':
       arguments->logvar = 1;
       break;
+    case 'o':
+      arguments->outfile = arg;
+      break;
     default:
       return ARGP_ERR_UNKNOWN;
     }
@@ -77,41 +82,34 @@ main (int argc, char **argv)
   arguments.logdir = "";
   arguments.pkg_name = "";
   arguments.logvar = 0;
+  arguments.outfile = "_";
 
   argp_parse (&argp, argc, argv, 0, 0, &arguments);
 
   arg_val (arguments.hist_all, arguments.logdir,
 	   arguments.pkg_name, arguments.logvar);
 
+  char *comp = "_";
 
-  if (arguments.pkg_name[0] != '\0' || arguments.hist_all == 1)
+  if (arguments.outfile != comp)
+    reverse (l_dir, arguments.verbose, arguments.pkg_name, arguments.hist_all,
+        arguments.outfile);
+
+  else if (arguments.pkg_name[0] != '\0' || arguments.hist_all == 1)
   {
-    reverse (l_dir, arguments.verbose, arguments.pkg_name, arguments.hist_all);
+    reverse (l_dir, arguments.verbose, arguments.pkg_name, arguments.hist_all,
+        arguments.outfile);
   }
   else
-  {
   while (1)
     {
       printf ("\x1b[H\x1b[J");
 
-      reverse (l_dir, arguments.verbose, arguments.pkg_name, arguments.hist_all);
+      reverse (l_dir, arguments.verbose, arguments.pkg_name, arguments.hist_all,
+          arguments.outfile);
  
       fflush (stdout);
       sleep (1);
-/*
-      ch = getchar ();
-      if (ch == 'q')
-	    {
-	      changemode (0);
-	      printf ("\x1b[?25h");
-	      printf ("\x1b[H\x1b[J");
-	      break;
-	    }
-
-      sleep (1);
-      printf ("\x1b[H\x1b[J");
-      */
-    }
-  }
-  return 0;
+    } 
+return 0;
 }
