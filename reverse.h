@@ -102,11 +102,20 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile)
     { 
       if (strstr (lines[i], pkg_name) != NULL && strstr (lines[i], pat_run) != NULL)
       {
-        char *buf1 = strtok (lines[i - 2], delim_pkg);
-        buf1[0] = '\0';
-        char *buf2 = strtok (NULL, delim_colon);
-        buf2[0] = '\0';
-        char *time = strtok (NULL, delim_nl);
+        static char *time;
+
+        for (size_t h = i; h > 0; h--)
+        {
+          if (strstr (lines[h], pat_time) != NULL)
+          {
+            char *buf1 = strtok (lines[h], delim_pkg);
+            buf1[0] = '\0';
+            char *buf2 = strtok (NULL, delim_colon);
+            buf2[0] = '\0';
+            time = strtok (NULL, delim_nl);
+            break;
+          }
+        }
 
         char *buf3 = strtok (lines[i], delim_counter);
         buf3[0] = '\0';
