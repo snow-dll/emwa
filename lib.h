@@ -13,6 +13,7 @@ static char *log = "/var/log/portage/emerge.log";
 static char *logname = "/emerge.log";
 static char *cmd = "portageq envvar EMERGE_LOG_DIR";
 static char l_dir[100];
+const char *offset;
 
 static void
 usage ()
@@ -23,8 +24,18 @@ usage ()
 }
 
 static int
-arg_val (int hist_all, char *logdir, char *pkg_name, int logvar, char *outfile)
+arg_val (int hist_all, char *logdir, char *pkg_name, int logvar, char *outfile,
+    int eprefix)
 {
+  if (eprefix == 1)
+  {
+    offset = getenv ("EPREFIX");
+    int len = strlen (offset);
+    strncpy (l_dir, offset, len);
+    int len2 = strlen (log);
+    strncat (l_dir, log, len2);
+  }
+
   if (outfile[0] != '\0')
   {
     FILE *fp;
@@ -32,7 +43,6 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar, char *outfile)
     fprintf (fp, "logfile start\n\n");
     fclose (fp);
   }
-
 
   if (hist_all == 1 && pkg_name[0] != '\0')
     {

@@ -21,6 +21,7 @@ struct arguments
   char *pkg_name;
   int logvar;
   char *outfile;
+  int eprefix;
 };
 
 
@@ -31,6 +32,7 @@ static struct argp_option options[] = {
   {"logdir", 'd', "DIR", 0, "Specify emerge log directory", 0},
   {"logvar", 'l', 0, 0, "Read from EMERGE_DIR_LOG", 0},
   {"outfile", 'o', "FILE", 0, "Write to file instead of standard output", 0},
+  {"eprefix", 'e', 0, 0, "Use the Gentoo Prefix offset", 0},
   {0}
 };
 
@@ -62,6 +64,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
     case 'o':
       arguments->outfile = arg;
       break;
+    case 'e':
+      arguments->eprefix = 1;
+      break;
     default:
       return ARGP_ERR_UNKNOWN;
     }
@@ -83,11 +88,12 @@ main (int argc, char **argv)
   arguments.pkg_name = "";
   arguments.logvar = 0;
   arguments.outfile = "";
+  arguments.eprefix = 0;
 
   argp_parse (&argp, argc, argv, 0, 0, &arguments);
 
-  arg_val (arguments.hist_all, arguments.logdir,
-	   arguments.pkg_name, arguments.logvar, arguments.outfile);
+  arg_val (arguments.hist_all, arguments.logdir,arguments.pkg_name,
+      arguments.logvar, arguments.outfile, arguments.eprefix);
 
   if (arguments.outfile[0] != '\0')
     reverse (l_dir, arguments.verbose, arguments.pkg_name, arguments.hist_all,
