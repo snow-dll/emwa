@@ -23,8 +23,17 @@ usage ()
 }
 
 static int
-arg_val (int hist_all, char *logdir, char *pkg_name, int logvar)
+arg_val (int hist_all, char *logdir, char *pkg_name, int logvar, char *outfile)
 {
+  if (outfile[0] != '\0')
+  {
+    FILE *fp;
+    fp = fopen (outfile, "w");
+    fprintf (fp, "logfile start");
+    fclose (fp);
+  }
+
+
   if (hist_all == 1 && pkg_name[0] != '\0')
     {
       usage ();

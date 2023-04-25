@@ -82,16 +82,14 @@ main (int argc, char **argv)
   arguments.logdir = "";
   arguments.pkg_name = "";
   arguments.logvar = 0;
-  arguments.outfile = "_";
+  arguments.outfile = "";
 
   argp_parse (&argp, argc, argv, 0, 0, &arguments);
 
   arg_val (arguments.hist_all, arguments.logdir,
-	   arguments.pkg_name, arguments.logvar);
+	   arguments.pkg_name, arguments.logvar, arguments.outfile);
 
-  char *comp = "_";
-
-  if (arguments.outfile != comp)
+  if (arguments.outfile[0] != '\0')
     reverse (l_dir, arguments.verbose, arguments.pkg_name, arguments.hist_all,
         arguments.outfile);
 

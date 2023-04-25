@@ -89,13 +89,12 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile)
   static char delim_colon[] = ":";
   static char delim_nl[] = "\n";
   size_t i = tot_lines - 1;
-  static char *comp = "_";
-
+/*
   FILE *fp;
   fp = fopen (outfile, "w");
   fprintf (fp, " ");
   fclose (fp);
-
+*/
   if (pkg_name[0] != '\0')
   {
     for (i = 0; i < tot_lines - 1; i++)
@@ -112,8 +111,9 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile)
         buf3[0] = '\0';
         char *pkg = strtok (NULL, delim_pkg);
 
-        if (outfile != comp)
+        if (outfile[0] != '\0')
         {
+          FILE *fp;
           fp = fopen (outfile, "a");
           fprintf (fp, "%s : %s\n", time, pkg);
           fclose (fp);
@@ -146,8 +146,9 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile)
         buf3[0] = '\0';
         char *pkg = strtok (NULL, delim_pkg);
 
-        if (outfile != comp)
+        if (outfile[0] != '\0')
         {
+          FILE *fp;
           fp = fopen (outfile, "a");
           fprintf (fp, "%s : %s\n", time, pkg);
           fclose (fp);
