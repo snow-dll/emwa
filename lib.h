@@ -7,8 +7,6 @@
 #include <sys/types.h>
 #include <sys/time.h>
 
-/*** global vars ***/
-
 static char *log = "/var/log/portage/emerge.log";
 static char *logname = "/emerge.log";
 static char *cmd = "portageq envvar EMERGE_LOG_DIR";
@@ -19,7 +17,7 @@ static void
 usage ()
 {
   printf ("\nemwa - [em]erge [wa]tchtower\n\n");
-  printf ("usage: emwa [FLAG] [ARG]\n\n");
+  printf ("usage: emwa [option] [argument]\n\n");
   printf (" - written by k3nny <k3nny.wx@mailfence.com>\n\n");
 }
 
@@ -29,11 +27,19 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar, char *outfile,
 {
   if (eprefix == 1)
   {
-    offset = getenv ("EPREFIX");
-    int len = strlen (offset);
-    strncpy (l_dir, offset, len);
-    int len2 = strlen (log);
-    strncat (l_dir, log, len2);
+    if (getenv ("EPREFIX"))
+    {
+      offset = getenv ("EPREFIX");
+      int len = strlen (*offset);
+      strncpy (l_dir, offset, len);
+      int len2 = strlen (log);
+      strncat (l_dir, log, len2);
+    }
+    else
+    {
+      printf ("\nno EPREFIX offset found.\n\n");
+      exit (1);
+    }
   }
 
   if (outfile[0] != '\0')

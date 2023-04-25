@@ -7,7 +7,8 @@
 #define INC_CHARS 1024
 
 int
-reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile)
+reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
+    int unmerge)
 {
   FILE *file = fopen (log, "r");
 
@@ -84,19 +85,64 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile)
   static char *pat_run = ">>> emerge";
   static char *pat_end = "*** terminating";
   static char *pat_time = "Started emerge on:";
+  char *pat_unmerge = "unmerge success";
   static char delim_start[] = "(";
   static char delim_counter[] = ")";
   static char delim_pkg[] = " ";
   static char delim_colon[] = ":";
   static char delim_nl[] = "\n";
   size_t i = tot_lines - 1;
-/*
-  FILE *fp;
-  fp = fopen (outfile, "w");
-  fprintf (fp, " ");
-  fclose (fp);
-*/
-  if (pkg_name[0] != '\0')
+
+  
+  if (unmerge == 1)
+  {
+    for (i = 0; i < tot_lines - 1; i++)
+    {
+      if (strstr (lines[i], pat_unmerge) != NULL)
+      {
+        static char *time;
+
+        for (size_t h = i; h > 0; h--)
+        {
+          if (strstr (lines[h], pat_time) != NULL)
+          {
+            char *buf1 = strtok (lines[h], delim_pkg);
+            buf1[0] = '\0';
+            char *buf2 = strtok (NULL, delim_colon);
+            buf2[0] = '\0';
+            time = strtok (NULL, delim_nl);
+            break;
+          }
+        }
+
+        char *buf3 = strtok (lines[i], delim_colon);
+        buf3[0] = '\0';
+        char *buf4 = strtok (NULL, delim_colon);
+        buf4[0] = '\0';
+        char *pkg = strtok (NULL, delim_nl);
+
+        if (outfile[0] != '\0')
+        {
+          FILE *fp;
+          fp = fopen (outfile, "a");
+          fprintf (fp, "%s : %s\n", time, pkg);
+          fclose (fp);
+        } else
+        {
+          printf (" %s : %s\n", time, pkg);
+        }
+      }
+    }
+
+    for (size_t cnt = 0; cnt < tot_lines; cnt++)
+      free (lines[cnt]);
+
+    free (lines);
+    fclose (file);
+  }
+
+
+  else if (pkg_name[0] != '\0')
   {
     for (i = 0; i < tot_lines - 1; i++)
     { 
