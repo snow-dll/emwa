@@ -29,7 +29,7 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar, char *outfile)
   {
     FILE *fp;
     fp = fopen (outfile, "w");
-    fprintf (fp, "logfile start");
+    fprintf (fp, "logfile start\n\n");
     fclose (fp);
   }
 
