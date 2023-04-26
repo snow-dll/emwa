@@ -30,7 +30,7 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar, char *outfile,
     if (getenv ("EPREFIX"))
     {
       offset = getenv ("EPREFIX");
-      int len = strlen (*offset);
+      int len = strlen (offset);
       strncpy (l_dir, offset, len);
       int len2 = strlen (log);
       strncat (l_dir, log, len2);

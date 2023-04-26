@@ -6,6 +6,56 @@
 #define INC_LINES 1024
 #define INC_CHARS 1024
 
+static char *pat_run = ">>> emerge";
+static char *pat_end = "*** terminating";
+static char *pat_time = "Started emerge on:";
+static char *pat_unmerge = "unmerge success";
+static char delim_start[] = "(";
+static char delim_counter[] = ")";
+static char delim_pkg[] = " ";
+static char delim_colon[] = ":";
+static char delim_nl[] = "\n";
+static char *time;
+
+void freelines (size_t total, char *lines[], FILE *file)
+{
+  for (size_t i = 0; i < total; i++)
+  free (lines[i]);
+  free (lines);
+  fclose (file);
+}
+
+void timestamp (size_t i, char *pat_time, char delim_1[],
+  char delim_2[], char delim_3[], char *lines[])
+{
+  for (size_t h = i; h > 0; h--)
+  {
+    if (strstr (lines[h], pat_time) != NULL)
+    {
+      char *buf1 = strtok (lines[h], delim_1);
+      buf1[0] = '\0';
+      char *buf2 = strtok (NULL, delim_2);
+      buf2[0] = '\0';
+      time = strtok (NULL, delim_3);
+      break;
+    }
+  }
+}
+
+void printer (char *outfile, char *time, char *pkg)
+{
+  if (outfile[0] != '\0')
+  {
+    FILE *fp;
+    fp = fopen (outfile, "a");
+    fprintf (fp, "%s : %s\n", time, pkg);
+    fclose (fp);
+  } else
+  {
+    printf (" %s : %s\n", time, pkg);
+  }
+}
+
 int
 reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
     int unmerge)
@@ -26,94 +76,61 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
   char c;
 
   do
-    {
-      c = fgetc (file);
+  {
+    c = fgetc (file);
 
-      if (ferror (file))
-	{
-	  printf ("error reading from file\n");
-	  return 1;
-	}
+    if (ferror (file))
+	  {
+	    printf ("error reading from file\n");
+	    return 1;
+	  }
+    if (feof (file))
+	  {
+	    if (tot_chars != 0)
+	      {
+	        lines[tot_lines] = realloc (lines[tot_lines], tot_chars + 1);
+	        lines[tot_lines][tot_chars] = '\0';
+	        tot_lines++;
+	      }
+	    break;
+	  }
+    if (tot_chars == 0)
+	    lines[tot_lines] = malloc (INC_CHARS);
 
-      if (feof (file))
-	{
-	  if (tot_chars != 0)
-	    {
-	      lines[tot_lines] = realloc (lines[tot_lines], tot_chars + 1);
-	      lines[tot_lines][tot_chars] = '\0';
+    lines[tot_lines][tot_chars] = c;
+    tot_chars++;
 
-	      tot_lines++;
-	    }
+    if (c == '\n')
+	  {
+	    lines[tot_lines] = realloc (lines[tot_lines], tot_chars + 1);
+	    lines[tot_lines][tot_chars] = '\0';
 
-	  break;
-	}
+	    tot_lines++;
+	    tot_chars = 0;
 
-      if (tot_chars == 0)
-	lines[tot_lines] = malloc (INC_CHARS);
-
-      lines[tot_lines][tot_chars] = c;
-
-      tot_chars++;
-
-      if (c == '\n')
-	{
-	  lines[tot_lines] = realloc (lines[tot_lines], tot_chars + 1);
-	  lines[tot_lines][tot_chars] = '\0';
-
-	  tot_lines++;
-	  tot_chars = 0;
-
-	  if (tot_lines % INC_LINES == 0)
+	    if (tot_lines % INC_LINES == 0)
 	    {
 	      size_t new_sz = tot_lines + INC_LINES;
 	      lines = realloc (lines, sizeof (char *) * new_sz);
 	    }
-	}
-      else if (tot_chars % INC_CHARS == 0)
-	{
-	  size_t new_sz = tot_chars + INC_CHARS;
-	  lines[tot_lines] = realloc (lines[tot_lines], new_sz);
-	}
-    }
-  while (true);
+	  }
+    else if (tot_chars % INC_CHARS == 0)
+	  {
+	    size_t new_sz = tot_chars + INC_CHARS;
+	    lines[tot_lines] = realloc (lines[tot_lines], new_sz);
+	  }
+  } while (true);
 
   lines = realloc (lines, sizeof (char *) * tot_lines);
-
-
-  /*** ARG DEPENDTEND ***/
-
-  static char *pat_run = ">>> emerge";
-  static char *pat_end = "*** terminating";
-  static char *pat_time = "Started emerge on:";
-  char *pat_unmerge = "unmerge success";
-  static char delim_start[] = "(";
-  static char delim_counter[] = ")";
-  static char delim_pkg[] = " ";
-  static char delim_colon[] = ":";
-  static char delim_nl[] = "\n";
   size_t i = tot_lines - 1;
 
-  
   if (unmerge == 1)
   {
     for (i = 0; i < tot_lines - 1; i++)
     {
       if (strstr (lines[i], pat_unmerge) != NULL)
       {
-        static char *time;
-
-        for (size_t h = i; h > 0; h--)
-        {
-          if (strstr (lines[h], pat_time) != NULL)
-          {
-            char *buf1 = strtok (lines[h], delim_pkg);
-            buf1[0] = '\0';
-            char *buf2 = strtok (NULL, delim_colon);
-            buf2[0] = '\0';
-            time = strtok (NULL, delim_nl);
-            break;
-          }
-        }
+        timestamp (i, pat_time, delim_pkg, delim_colon, delim_nl, lines);
 
         char *buf3 = strtok (lines[i], delim_colon);
         buf3[0] = '\0';
@@ -121,26 +138,11 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
         buf4[0] = '\0';
         char *pkg = strtok (NULL, delim_nl);
 
-        if (outfile[0] != '\0')
-        {
-          FILE *fp;
-          fp = fopen (outfile, "a");
-          fprintf (fp, "%s : %s\n", time, pkg);
-          fclose (fp);
-        } else
-        {
-          printf (" %s : %s\n", time, pkg);
-        }
+        printer (outfile, time, pkg);
       }
     }
-
-    for (size_t cnt = 0; cnt < tot_lines; cnt++)
-      free (lines[cnt]);
-
-    free (lines);
-    fclose (file);
+    freelines (tot_lines, lines, file);
   }
-
 
   else if (pkg_name[0] != '\0')
   {
@@ -148,43 +150,16 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
     { 
       if (strstr (lines[i], pkg_name) != NULL && strstr (lines[i], pat_run) != NULL)
       {
-        static char *time;
-
-        for (size_t h = i; h > 0; h--)
-        {
-          if (strstr (lines[h], pat_time) != NULL)
-          {
-            char *buf1 = strtok (lines[h], delim_pkg);
-            buf1[0] = '\0';
-            char *buf2 = strtok (NULL, delim_colon);
-            buf2[0] = '\0';
-            time = strtok (NULL, delim_nl);
-            break;
-          }
-        }
+        timestamp (i, pat_time, delim_pkg, delim_colon, delim_nl, lines);
 
         char *buf3 = strtok (lines[i], delim_counter);
         buf3[0] = '\0';
         char *pkg = strtok (NULL, delim_pkg);
 
-        if (outfile[0] != '\0')
-        {
-          FILE *fp;
-          fp = fopen (outfile, "a");
-          fprintf (fp, "%s : %s\n", time, pkg);
-          fclose (fp);
-        } else
-        {
-          printf (" %s : %s\n", time, pkg);
-        }
+        printer (outfile, time, pkg);
       }
     }
-  
-    for (size_t cnt = 0; cnt < tot_lines; cnt++)
-      free (lines[cnt]);
-
-    free (lines);
-    fclose (file);
+    freelines (tot_lines, lines, file);
   }
   else if (hist_all == 1)
   {
@@ -192,52 +167,26 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
     {
       if (strstr (lines[i], pat_run) != NULL)
       {
-        static char *time;
-
-        for (size_t h = i; h > 0; h--)
-        {
-          if (strstr (lines[h], pat_time) != NULL)
-          {
-            char *buf1 = strtok (lines[h], delim_pkg);
-            buf1[0] = '\0';
-            char *buf2 = strtok (NULL, delim_colon);
-            buf2[0] = '\0';
-            time = strtok (NULL, delim_nl);
-            break;
-          }
-        }
+        timestamp (i, pat_time, delim_pkg, delim_colon, delim_nl, lines);
 
         char *buf3 = strtok (lines[i], delim_counter);
         buf3[0] = '\0';
         char *pkg = strtok (NULL, delim_pkg);
 
-        if (outfile[0] != '\0')
-        {
-          FILE *fp;
-          fp = fopen (outfile, "a");
-          fprintf (fp, "%s : %s\n", time, pkg);
-          fclose (fp);
-        } else
-        {
-          printf (" %s : %s\n", time, pkg);
-        }
+        printer (outfile, time, pkg);
       }
     }
-
-    free (lines);
-    fclose (file);
+    freelines (tot_lines, lines, file);
   }
   else if (strstr (lines[i], pat_end) != NULL)
   {
     printf ("emwa - [em]erge [wa]tchtower\n\n");
-    printf ("no running build process found.\n");
+    printf (" - no running build process found.\n");
 
-    for (size_t cnt = 0; cnt < tot_lines; cnt++)
-      free (lines[cnt]);
+    if (verbose == 1)
+      printf ("\n - reading from: %s\n", log);
 
-    free (lines);
-    fclose (file);
-
+    freelines (tot_lines, lines, file);
   } 
   else
   {
@@ -248,31 +197,19 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
         
         char *extract_buf = strtok (lines[i], delim_start);
         extract_buf[0] = '\0';
-
         char *counter = strtok (NULL, delim_counter);
         char *pkg = strtok (NULL, delim_pkg);
 
-        if (verbose == 1)
-        {
-          printf ("emwa - [em]erge [wa]tchtower\n\n");
-          printf (" - emerging: %s\n\n", counter);
-          printf (" - package: %s\n\n", pkg);
-          printf (" - reading from: %s", log);
-        } else
-        {
-          printf ("emwa - [em]erge [wa]tchtower\n\n");
-          printf (" - emerging: %s\n\n", counter);
-          printf (" - package: %s", pkg);
-        }
+        printf ("emwa - [em]erge [wa]tchtower\n\n");
+        printf (" - emerging: %s\n\n", counter);
+        printf (" - package: %s\n", pkg);
 
+        if (verbose == 1)
+          printf ("\n - reading from: %s\n", log);
         break;
       }
     }
-    for (size_t cnt = 0; cnt < tot_lines; cnt++)
-      free (lines[cnt]);
-
-    free (lines);
-    fclose (file);
+    freelines (tot_lines, lines, file);
   }
 
   return 0;
