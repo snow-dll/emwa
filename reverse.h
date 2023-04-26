@@ -12,12 +12,12 @@ static char *pat_end = "*** terminating";
 static char *pat_unmerge = "unmerge success";
 static char delim_start[] = "(";
 static char delim_counter[] = ")";
-static char delim_pkg[] = " ";
+static char delim_space[] = " ";
 static char delim_colon[] = ":";
 static char delim_nl[] = "\n";
-static char *time1;
-char buffer2[80];
-char *pkg;
+static char *rawtime_str;
+char pkgtime[80];
+char *pkgname;
 
 void freelines (size_t total, char *lines[], FILE *file)
 {
@@ -25,23 +25,6 @@ void freelines (size_t total, char *lines[], FILE *file)
   free (lines[i]);
   free (lines);
   fclose (file);
-}
-
-void timestamp (size_t i, char *pat_time, char delim_1[],
-  char delim_2[], char delim_3[], char *lines[])
-{
-  for (size_t h = i; h > 0; h--)
-  {
-    if (strstr (lines[h], pat_time) != NULL)
-    {
-      char *buf1 = strtok (lines[h], delim_1);
-      buf1[0] = '\0';
-      char *buf2 = strtok (NULL, delim_2);
-      buf2[0] = '\0';
-      time1 = strtok (NULL, delim_3);
-      break;
-    }
-  }
 }
 
 void printer (char *outfile, char *time, char *pkg)
@@ -60,14 +43,20 @@ void printer (char *outfile, char *time, char *pkg)
 
 void epoch (int i, char *lines[])
 {
-  time1 = strtok (lines[i], delim_colon);
-  time_t rawtime = strtoul (time1, NULL, 0);
+  rawtime_str = strtok (lines[i], delim_colon);
+  time_t rawtime = strtoul (rawtime_str, NULL, 0);
   struct tm ts;
 
   ts = *localtime (&rawtime);
-  strftime (buffer2, sizeof (buffer2), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
+  strftime (pkgtime, sizeof (pkgtime), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
 }
 
+void hist_delim ()
+{
+  char *buf3 = strtok (NULL, delim_counter);
+  buf3[0] = '\0';
+  pkgname = strtok (NULL, delim_space);
+}
 
 int
 reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
@@ -147,9 +136,9 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
 
         char *buf = strtok (NULL, delim_colon);
         buf[0] = '\0';
-        pkg = strtok (NULL, delim_nl);
+        pkgname = strtok (NULL, delim_nl);
 
-        printer (outfile, buffer2, pkg);
+        printer (outfile, pkgtime, pkgname);
       }
     }
     freelines (tot_lines, lines, file);
@@ -163,11 +152,9 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
       {
         epoch (i, lines);
 
-        char *buf3 = strtok (NULL, delim_counter);
-        buf3[0] = '\0';
-        char *pkg = strtok (NULL, delim_pkg);
+        hist_delim ();
 
-        printer (outfile, buffer2, pkg);
+        printer (outfile, pkgtime, pkgname);
       }
     }
     freelines (tot_lines, lines, file);
@@ -179,12 +166,9 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
       if (strstr (lines[i], pat_run) != NULL)
       {
         epoch (i, lines);
+        hist_delim ();
 
-        char *buf3 = strtok (NULL, delim_counter);
-        buf3[0] = '\0';
-        char *pkg = strtok (NULL, delim_pkg);
-
-        printer (outfile, buffer2, pkg);
+        printer (outfile, pkgtime, pkgname);
       }
     }
     freelines (tot_lines, lines, file);
@@ -209,11 +193,11 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
         char *extract_buf = strtok (lines[i], delim_start);
         extract_buf[0] = '\0';
         char *counter = strtok (NULL, delim_counter);
-        char *pkg = strtok (NULL, delim_pkg);
+        pkgname = strtok (NULL, delim_space);
 
         printf ("emwa - [em]erge [wa]tchtower\n\n");
         printf (" - emerging: %s\n\n", counter);
-        printf (" - package: %s\n", pkg);
+        printf (" - package: %s\n", pkgname);
 
         if (verbose == 1)
           printf ("\n - reading from: %s\n", log);
