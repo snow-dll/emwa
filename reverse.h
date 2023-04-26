@@ -2,20 +2,22 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <time.h>
 
 #define INC_LINES 1024
 #define INC_CHARS 1024
 
 static char *pat_run = ">>> emerge";
 static char *pat_end = "*** terminating";
-static char *pat_time = "Started emerge on:";
 static char *pat_unmerge = "unmerge success";
 static char delim_start[] = "(";
 static char delim_counter[] = ")";
 static char delim_pkg[] = " ";
 static char delim_colon[] = ":";
 static char delim_nl[] = "\n";
-static char *time;
+static char *time1;
+char buffer2[80];
+char *pkg;
 
 void freelines (size_t total, char *lines[], FILE *file)
 {
@@ -36,7 +38,7 @@ void timestamp (size_t i, char *pat_time, char delim_1[],
       buf1[0] = '\0';
       char *buf2 = strtok (NULL, delim_2);
       buf2[0] = '\0';
-      time = strtok (NULL, delim_3);
+      time1 = strtok (NULL, delim_3);
       break;
     }
   }
@@ -48,13 +50,24 @@ void printer (char *outfile, char *time, char *pkg)
   {
     FILE *fp;
     fp = fopen (outfile, "a");
-    fprintf (fp, "%s : %s\n", time, pkg);
+    fprintf (fp, "%s >>> %s\n", time, pkg);
     fclose (fp);
   } else
   {
-    printf (" %s : %s\n", time, pkg);
+    printf (" %s >>> %s\n", time, pkg);
   }
 }
+
+void epoch (int i, char *lines[])
+{
+  time1 = strtok (lines[i], delim_colon);
+  time_t rawtime = strtoul (time1, NULL, 0);
+  struct tm ts;
+
+  ts = *localtime (&rawtime);
+  strftime (buffer2, sizeof (buffer2), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
+}
+
 
 int
 reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
@@ -130,15 +143,13 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
     {
       if (strstr (lines[i], pat_unmerge) != NULL)
       {
-        timestamp (i, pat_time, delim_pkg, delim_colon, delim_nl, lines);
+        epoch (i, lines);
 
-        char *buf3 = strtok (lines[i], delim_colon);
-        buf3[0] = '\0';
-        char *buf4 = strtok (NULL, delim_colon);
-        buf4[0] = '\0';
-        char *pkg = strtok (NULL, delim_nl);
+        char *buf = strtok (NULL, delim_colon);
+        buf[0] = '\0';
+        pkg = strtok (NULL, delim_nl);
 
-        printer (outfile, time, pkg);
+        printer (outfile, buffer2, pkg);
       }
     }
     freelines (tot_lines, lines, file);
@@ -150,13 +161,13 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
     { 
       if (strstr (lines[i], pkg_name) != NULL && strstr (lines[i], pat_run) != NULL)
       {
-        timestamp (i, pat_time, delim_pkg, delim_colon, delim_nl, lines);
+        epoch (i, lines);
 
-        char *buf3 = strtok (lines[i], delim_counter);
+        char *buf3 = strtok (NULL, delim_counter);
         buf3[0] = '\0';
         char *pkg = strtok (NULL, delim_pkg);
 
-        printer (outfile, time, pkg);
+        printer (outfile, buffer2, pkg);
       }
     }
     freelines (tot_lines, lines, file);
@@ -167,13 +178,13 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
     {
       if (strstr (lines[i], pat_run) != NULL)
       {
-        timestamp (i, pat_time, delim_pkg, delim_colon, delim_nl, lines);
+        epoch (i, lines);
 
-        char *buf3 = strtok (lines[i], delim_counter);
+        char *buf3 = strtok (NULL, delim_counter);
         buf3[0] = '\0';
         char *pkg = strtok (NULL, delim_pkg);
 
-        printer (outfile, time, pkg);
+        printer (outfile, buffer2, pkg);
       }
     }
     freelines (tot_lines, lines, file);
