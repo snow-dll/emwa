@@ -31,9 +31,10 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar, char *outfile,
     {
       offset = getenv ("EPREFIX");
       int len = strlen (offset);
-      strncpy (l_dir, offset, len);
+      strncat (l_dir, offset, len);
       int len2 = strlen (log);
       strncat (l_dir, log, len2);
+      printf ("%s", l_dir);
     }
     else
     {
@@ -92,11 +93,6 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar, char *outfile,
 
       int sz_name = strlen (logname);
       strncat (l_dir, logname, sz_name);
-    } else
-    {
-      int sz = strlen (log);
-      strncpy (l_dir, log, sz);
     }
-
   return 0;
 }

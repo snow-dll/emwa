@@ -65,7 +65,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
 
   if (file == NULL)
     {
-      printf ("error opening file");
+      printf ("error opening file\n");
       return 1;
     }
 
