@@ -31,8 +31,7 @@ void printer (char *outfile, char *time, char *pkg)
 {
   if (outfile[0] != '\0')
   {
-    FILE *fp;
-    fp = fopen (outfile, "a");
+    FILE *fp = fopen (outfile, "a");
     fprintf (fp, "%s >>> %s\n", time, pkg);
     fclose (fp);
   } else
@@ -185,7 +184,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
   } 
   else
   {
-    for (i; i > 0; i--)
+    for (i = tot_lines - 1; i > 0; i--)
     {
       if (strstr (lines[i], pat_run) != NULL)
       {

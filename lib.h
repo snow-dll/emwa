@@ -7,7 +7,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 
-static char *log = "/var/log/portage/emerge.log";
+static char *log = "/var/log/emerge.log";
 static char *logname = "/emerge.log";
 static char *cmd = "portageq envvar EMERGE_LOG_DIR";
 static char l_dir[100];
@@ -44,8 +44,15 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar, char *outfile,
 
   if (outfile[0] != '\0')
   {
-    FILE *fp;
+    FILE *fp ;
     fp = fopen (outfile, "w");
+    
+    if (fp == NULL)
+    {
+      printf ("error opening file\n");
+      exit (1);
+    }
+
     fprintf (fp, "logfile start\n\n");
     fclose (fp);
   }
