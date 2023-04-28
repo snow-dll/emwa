@@ -24,6 +24,11 @@ static char *rawtime_str;
 char pkgtime[80];
 char *pkgname;
 
+void freelines (size_t total, char *lines[], gzFile *file);
+void printer (char *outfile, char *time, char *op, char *pkg);
+void epoch (int i, char *lines[]);
+void hist_delim (void);
+
 void freelines (size_t total, char *lines[], gzFile *file)
 {
   for (size_t i = 0; i < total; i++)
@@ -55,7 +60,7 @@ void epoch (int i, char *lines[])
   strftime (pkgtime, sizeof (pkgtime), "%Y-%m-%d %H:%M:%S", &ts);
 }
 
-void hist_delim ()
+void hist_delim (void)
 {
   char *buf3 = strtok (NULL, delim_counter);
   buf3[0] = '\0';
@@ -75,7 +80,6 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
       return 1;
     }
 
-  //char **lines;
   lines = malloc (sizeof (char *) * INC_CHARS);
 
   size_t tot_lines = 0;

@@ -14,7 +14,7 @@ static char l_dir[100];
 const char *offset;
 
 static void
-usage ()
+usage (void)
 {
   printf ("\nemwa - [em]erge [wa]tchtower\n\n");
   printf ("usage: emwa [option] [argument]\n\n");
