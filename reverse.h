@@ -10,6 +10,8 @@
 static char *pat_run = ">>> emerge";
 static char *pat_end = "*** terminating";
 static char *pat_unmerge = "unmerge success";
+static char *merged = ">>>";
+static char *unmerged = "<<<";
 static char delim_start[] = "(";
 static char delim_counter[] = ")";
 static char delim_space[] = " ";
@@ -27,16 +29,16 @@ void freelines (size_t total, char *lines[], FILE *file)
   fclose (file);
 }
 
-void printer (char *outfile, char *time, char *pkg)
+void printer (char *outfile, char *time, char *op, char *pkg)
 {
   if (outfile[0] != '\0')
   {
     FILE *fp = fopen (outfile, "a");
-    fprintf (fp, "%s >>> %s\n", time, pkg);
+    fprintf (fp, "%s %s %s\n", time, op, pkg);
     fclose (fp);
   } else
   {
-    printf (" %s >>> %s\n", time, pkg);
+    printf (" %s %s %s\n", time, op, pkg);
   }
 }
 
@@ -47,7 +49,7 @@ void epoch (int i, char *lines[])
   struct tm ts;
 
   ts = *localtime (&rawtime);
-  strftime (pkgtime, sizeof (pkgtime), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
+  strftime (pkgtime, sizeof (pkgtime), "%Y-%m-%d %H:%M:%S", &ts);
 }
 
 void hist_delim ()
@@ -65,7 +67,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
 
   if (file == NULL)
     {
-      printf ("error opening file\n");
+      printf ("!!! Error\nUnable to open file\n");
       return 1;
     }
 
@@ -137,7 +139,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
         buf[0] = '\0';
         pkgname = strtok (NULL, delim_nl);
 
-        printer (outfile, pkgtime, pkgname);
+        printer (outfile, pkgtime, unmerged, pkgname);
       }
     }
     freelines (tot_lines, lines, file);
@@ -153,7 +155,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
 
         hist_delim ();
 
-        printer (outfile, pkgtime, pkgname);
+        printer (outfile, pkgtime, merged, pkgname);
       }
     }
     freelines (tot_lines, lines, file);
@@ -167,7 +169,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
         epoch (i, lines);
         hist_delim ();
 
-        printer (outfile, pkgtime, pkgname);
+        printer (outfile, pkgtime, merged, pkgname);
       }
     }
     freelines (tot_lines, lines, file);
@@ -187,8 +189,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
     for (i = tot_lines - 1; i > 0; i--)
     {
       if (strstr (lines[i], pat_run) != NULL)
-      {
-        
+      { 
         char *extract_buf = strtok (lines[i], delim_start);
         extract_buf[0] = '\0';
         char *counter = strtok (NULL, delim_counter);

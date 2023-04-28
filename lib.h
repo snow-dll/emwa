@@ -34,7 +34,6 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar, char *outfile,
       strncat (l_dir, offset, len);
       int len2 = strlen (log);
       strncat (l_dir, log, len2);
-      printf ("%s", l_dir);
     }
     else
     {
@@ -50,7 +49,7 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar, char *outfile,
     
     if (fp == NULL)
     {
-      printf ("error opening file\n");
+      printf ("!!! Error\nUnable to open file\n");
       exit (1);
     }
 
@@ -93,6 +92,10 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar, char *outfile,
 
       int sz_name = strlen (logname);
       strncat (l_dir, logname, sz_name);
+    } else if (eprefix == 0)
+    {
+      int sz = strlen (log);
+      strncpy (l_dir, log, sz);
     }
   return 0;
 }
