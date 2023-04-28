@@ -7,6 +7,8 @@
 #define INC_LINES 1024
 #define INC_CHARS 1024
 
+char **lines;
+
 static char *pat_run = ">>> emerge";
 static char *pat_end = "*** terminating";
 static char *pat_unmerge = "unmerge success";
@@ -71,7 +73,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
       return 1;
     }
 
-  char **lines;
+  //char **lines;
   lines = malloc (sizeof (char *) * INC_CHARS);
 
   size_t tot_lines = 0;
