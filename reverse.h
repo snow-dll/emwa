@@ -13,6 +13,8 @@ char **lines;
 static char *pat_run = ">>> emerge";
 static char *pat_end = "*** terminating";
 static char *pat_unmerge = "unmerge success";
+static char *pat_start = "Started emerge on:";
+static char *pat_success = "::: completed emerge";
 static char *merged = ">>>";
 static char *unmerged = "<<<";
 static char delim_start[] = "(";
@@ -28,6 +30,58 @@ void freelines (size_t total, char *lines[], gzFile *file);
 void printer (char *outfile, char *time, char *op, char *pkg);
 void epoch (int i, char *lines[]);
 void hist_delim (void);
+
+
+
+
+
+
+
+
+
+
+static int eta_i = 0;
+
+static char *rawtime_start;
+static char *rawtime_end;
+
+static size_t diff = 0;
+
+static size_t start_int = 0;
+static size_t end_int = 0;
+
+static size_t h, m, s;
+
+
+int calc_eta (char *lines[], size_t tot_lines)
+{
+  for (size_t i = eta_i; i < tot_lines - 1; i++)
+  {
+    if (strstr (lines[i], pat_success) != NULL && strstr (lines[i], pkgname) != NULL)
+    {
+      rawtime_end = strtok (lines[i], delim_colon);
+      sscanf (rawtime_end, "%zu", &end_int);
+
+
+      for (size_t h = i; h > 0; h--)
+      {
+        if (strstr (lines[h], pat_run) != NULL)
+        {
+          rawtime_start = strtok (lines[h], delim_colon);
+          sscanf (rawtime_start, "%zu", &start_int);
+
+          diff = end_int - start_int;
+
+          h = (diff/3600); 
+	        m = (diff -(3600*h))/60;
+	        s = (diff -(3600*h)-(m*60));
+
+          return 0;
+        }
+      }
+    }
+  }
+}
 
 void freelines (size_t total, char *lines[], gzFile *file)
 {
@@ -198,9 +252,12 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
         char *counter = strtok (NULL, delim_counter);
         pkgname = strtok (NULL, delim_space);
 
+        calc_eta (lines, tot_lines);
+
         printf ("emwa - [em]erge [wa]tchtower\n\n");
         printf (" - emerging: %s\n\n", counter);
-        printf (" - package: %s\n", pkgname);
+        printf (" - package: %s\n\n", pkgname);
+        printf (" - ETA: %zuh %zum %zus\n", h, m, s);
 
         if (verbose == 1)
           printf ("\n - reading from: %s\n", log);
