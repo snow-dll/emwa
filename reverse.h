@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
+#include <zlib.h>
 
 #define INC_LINES 1024
 #define INC_CHARS 1024
@@ -23,12 +24,12 @@ static char *rawtime_str;
 char pkgtime[80];
 char *pkgname;
 
-void freelines (size_t total, char *lines[], FILE *file)
+void freelines (size_t total, char *lines[], gzFile *file)
 {
   for (size_t i = 0; i < total; i++)
   free (lines[i]);
   free (lines);
-  fclose (file);
+  gzclose (file);
 }
 
 void printer (char *outfile, char *time, char *op, char *pkg)
@@ -65,10 +66,11 @@ int
 reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
     int unmerge)
 {
-  FILE *file = fopen (log, "r");
+  gzFile *file = gzopen (log, "r");
 
   if (file == NULL)
     {
+      printf ("%s", log);
       printf ("!!! Error\nUnable to open file\n");
       return 1;
     }
@@ -82,14 +84,9 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
 
   do
   {
-    c = fgetc (file);
+    c = gzgetc ((gzFile) file);
 
-    if (ferror (file))
-	  {
-	    printf ("error reading from file\n");
-	    return 1;
-	  }
-    if (feof (file))
+    if (gzeof (file))
 	  {
 	    if (tot_chars != 0)
 	      {

@@ -90,8 +90,6 @@ arg_val (int hist_all, char *logdir, char *pkg_name, int logvar, char *outfile,
       int sz_dir = strlen (logdir);
       strncpy (l_dir, logdir, sz_dir);
 
-      int sz_name = strlen (logname);
-      strncat (l_dir, logname, sz_name);
     } else if (eprefix == 0)
     {
       int sz = strlen (log);

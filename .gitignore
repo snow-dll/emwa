@@ -62,7 +62,3 @@ compile
 config.status
 install-sh
 *.o
-config.log
-dist/
-.deps/
-decomp
