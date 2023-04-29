@@ -40,7 +40,7 @@ void hist_delim (void);
 
 
 
-static int eta_i = 0;
+static size_t eta_i = 0;
 
 static char *rawtime_start;
 static char *rawtime_end;
@@ -50,12 +50,12 @@ static size_t diff = 0;
 static size_t start_int = 0;
 static size_t end_int = 0;
 
-static size_t h, m, s;
+static size_t h, m, s = 0;
 
 
 int calc_eta (char *lines[], size_t tot_lines)
 {
-  for (size_t i = eta_i; i < tot_lines - 1; i++)
+  for (size_t i = tot_lines - 1; i > eta_i; i--)
   {
     if (strstr (lines[i], pat_success) != NULL && strstr (lines[i], pkgname) != NULL)
     {
@@ -65,7 +65,7 @@ int calc_eta (char *lines[], size_t tot_lines)
 
       for (size_t h = i; h > 0; h--)
       {
-        if (strstr (lines[h], pat_run) != NULL)
+        if (strstr (lines[h], pat_run) != NULL && strstr (lines[h], pkgname) != NULL)
         {
           rawtime_start = strtok (lines[h], delim_colon);
           sscanf (rawtime_start, "%zu", &start_int);
@@ -79,6 +79,11 @@ int calc_eta (char *lines[], size_t tot_lines)
           return 0;
         }
       }
+    } else
+    {
+      h = 0;
+      m = 0;
+      s = 0;
     }
   }
 }
@@ -257,7 +262,10 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
         printf ("emwa - [em]erge [wa]tchtower\n\n");
         printf (" - emerging: %s\n\n", counter);
         printf (" - package: %s\n\n", pkgname);
-        printf (" - ETA: %zuh %zum %zus\n", h, m, s);
+        if (h == 0 && m == 0 && s == 0)
+          printf (" - No ETA available\n");
+        else
+          printf (" - ETA: %zuh %zum %zus\n", h, m, s);
 
         if (verbose == 1)
           printf ("\n - reading from: %s\n", log);
