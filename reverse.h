@@ -16,7 +16,7 @@ static char *pat_crash = "*** emerge";
 static char *pat_unmerge = "unmerge success";
 static char *pat_start = "Started emerge on:";
 static char *pat_success = "::: completed emerge";
-static char *merged = ">>>";
+static char *merged = ">>> ";
 static char *unmerged = "<<<";
 static char delim_start[] = "(";
 static char delim_counter[] = ")";
@@ -99,7 +99,7 @@ void printer (char *outfile, char *time, char *op, char *pkg)
     fclose (fp);
   } else
   {
-    printf (" %s %s %s\n", time, op, pkg);
+    printf (" %s %s%s\n", time, op, pkg);
   }
 }
 
