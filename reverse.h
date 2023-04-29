@@ -12,6 +12,7 @@ char **lines;
 
 static char *pat_run = ">>> emerge";
 static char *pat_end = "*** terminating";
+static char *pat_crash = "*** emerge";
 static char *pat_unmerge = "unmerge success";
 static char *pat_start = "Started emerge on:";
 static char *pat_success = "::: completed emerge";
@@ -30,15 +31,6 @@ void freelines (size_t total, char *lines[], gzFile *file);
 void printer (char *outfile, char *time, char *op, char *pkg);
 void epoch (int i, char *lines[]);
 void hist_delim (void);
-
-
-
-
-
-
-
-
-
 
 static size_t eta_i = 0;
 
@@ -84,8 +76,10 @@ int calc_eta (char *lines[], size_t tot_lines)
       h = 0;
       m = 0;
       s = 0;
+
     }
   }
+  return 0;
 }
 
 void freelines (size_t total, char *lines[], gzFile *file)
@@ -236,7 +230,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
     }
     freelines (tot_lines, lines, file);
   }
-  else if (strstr (lines[i], pat_end) != NULL)
+  else if (strstr (lines[i], pat_end) != NULL || strstr (lines[i], pat_crash) != NULL)
   {
     printf ("emwa - [em]erge [wa]tchtower\n\n");
     printf (" - no running build process found.\n");
@@ -249,7 +243,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
   else
   {
     for (i = tot_lines - 1; i > 0; i--)
-    {
+    { 
       if (strstr (lines[i], pat_run) != NULL)
       { 
         char *extract_buf = strtok (lines[i], delim_start);
@@ -262,6 +256,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
         printf ("emwa - [em]erge [wa]tchtower\n\n");
         printf (" - emerging: %s\n\n", counter);
         printf (" - package: %s\n\n", pkgname);
+
         if (h == 0 && m == 0 && s == 0)
           printf (" - No ETA available\n");
         else
