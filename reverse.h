@@ -23,6 +23,8 @@ static char delim_counter[] = ")";
 static char delim_space[] = " ";
 static char delim_colon[] = ":";
 static char delim_nl[] = "\n";
+static char delim_dash[] = "-";
+static char delim_slash[] = "/";
 static char *rawtime_str;
 char pkgtime[80];
 char *pkgname;
@@ -124,7 +126,7 @@ int
 reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
     int unmerge)
 {
-  gzFile *file = gzopen (log, "r");
+  struct gzFile_s *file = gzopen (log, "r");
 
   if (file == NULL)
     {
@@ -249,13 +251,15 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
         char *extract_buf = strtok (lines[i], delim_start);
         extract_buf[0] = '\0';
         char *counter = strtok (NULL, delim_counter);
-        pkgname = strtok (NULL, delim_space);
+        char *buf2 = strtok (NULL, delim_slash);
+        pkgname = strtok (NULL, delim_dash);
+        char *buf3 = strtok (NULL, delim_space);
 
         calc_eta (lines, tot_lines);
 
         printf ("emwa - [em]erge [wa]tchtower\n\n");
         printf (" - emerging: %s\n\n", counter);
-        printf (" - package: %s\n\n", pkgname);
+        printf (" - package: %s/%s-%s\n\n", buf2, pkgname, buf3);
 
         if (h == 0 && m == 0 && s == 0)
           printf (" - No ETA available\n");
