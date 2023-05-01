@@ -18,6 +18,9 @@
 ### consider supporting emwa by opening issues / pull requests.
 emwa will be strictly coded in C and make.
 
+### usage:
+[![asciicast](https://asciinema.org/a/8ZDXAowhojmOiACY00rXBNeXt.svg)](https://asciinema.org/a/8ZDXAowhojmOiACY00rXBNeXt)
+
 ### emwa supports both standard and gzip - compressed log files.
 
 ### Licensed under the GPL License
