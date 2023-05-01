@@ -29,7 +29,7 @@ static char *rawtime_str;
 char pkgtime[80];
 char *pkgname;
 
-void freelines (size_t total, char *lines[], gzFile *file);
+void freelines (size_t total, char *lines[], struct gzFile_s *file);
 void printer (char *outfile, char *time, char *op, char *pkg);
 void epoch (int i, char *lines[]);
 void hist_delim (void);
@@ -84,7 +84,7 @@ int calc_eta (char *lines[], size_t tot_lines)
   return 0;
 }
 
-void freelines (size_t total, char *lines[], gzFile *file)
+void freelines (size_t total, char *lines[], struct gzFile_s *file)
 {
   for (size_t i = 0; i < total; i++)
   free (lines[i]);
@@ -143,7 +143,7 @@ reverse (char *log, int verbose, char *pkg_name, int hist_all, char *outfile,
 
   do
   {
-    c = gzgetc ((gzFile) file);
+    c = gzgetc (file);
 
     if (gzeof (file))
 	  {
