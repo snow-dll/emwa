@@ -25,5 +25,5 @@ emwa will be strictly coded in C and make.
 
 ### Licensed under the GPL License
 
-### <k3nny.wx@mailfence.com>
+### <sn0wfox@airmail.cc>
 
