@@ -1,4 +1,4 @@
-# EMWA  -  [Em]erge [Wa]tchtower
+# EMWA  -  Portage Log-Analysis
 
 ## Project under active development
 
