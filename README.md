@@ -14,16 +14,9 @@
       -?  --help          Give this help list
           --usage         Give a short usage message
       -V  --version       Print program version
+be strictly coded in C and make.
 
-### consider supporting emwa by opening issues / pull requests.
-emwa will be strictly coded in C and make.
-
-### usage:
-[![asciicast](https://asciinema.org/a/8ZDXAowhojmOiACY00rXBNeXt.svg)](https://asciinema.org/a/8ZDXAowhojmOiACY00rXBNeXt)
-
-### emwa supports both standard and gzip - compressed log files.
-
-### Licensed under the GPL License
+### emwa supports both standard and gzip-compressed log files.
 
 ### <sn0wfox@airmail.cc>
 
