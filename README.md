@@ -14,7 +14,6 @@
       -?  --help          Give this help list
           --usage         Give a short usage message
       -V  --version       Print program version
-be strictly coded in C and make.
 
 ### emwa supports both standard and gzip-compressed log files.
 
