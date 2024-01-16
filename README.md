@@ -1,7 +1,5 @@
 # EMWA  -  Portage Log-Analysis
 
-## Project under active development
-
 ### options:
       -a  --hist-all      Print global build history
       -d  --logdir=DIR    Specify emerge log directory
